@@ -264,7 +264,6 @@ var svg = d3.select("body").append("svg")
 
 d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   // console.log(firms);
-  firms = firms.map(function(d, i){ d['index'] = i; return d; });
   
   var nodes = firms.map(function(d) {
     return {'name':d.name, 
