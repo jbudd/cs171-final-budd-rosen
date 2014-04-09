@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Les Miserables Co-occurrence</title>
+<!-- <title>Les Miserables Co-occurrence</title> -->
 <style>
 
 /*@import url(style.css?20120427);*/
 
 .background {
-  fill: #eee;
+  fill: #f1f1f1;
 }
 
 line {
@@ -17,11 +17,29 @@ text.active {
   fill: red;
 }
 
+body {
+  font-family: sans-serif;
+}
+
+text {
+  font-size: 10px;
+}
+
+.axis line, .axis path{
+  fill: none;
+  stroke: gray;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  text-transform: capitalize;
+}
+
 /* Copyright 2013 Michael Bostock. All rights reserved. Do not copy. */
 
 /*@import url(http://fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i|PT+Sans|PT+Sans:b);*/
 
-html {
+/*html {
   min-width: 1040px;
 }
 
@@ -216,39 +234,37 @@ blockquote:before {
 
 blockquote:after {
   position: absolute;
-}
+}*/
 
 </style>
 <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
+<script src="detail.js"></script>
 
-<header>
+<!-- <header>
   <aside>April 10, 2012</aside>
   <a href="../" rel="author">Mike Bostock</a>
-</header>
+</header> -->
 
-<h1><i>Les Miserables</i> Co-occurrence</h1>
+<!-- <h1><i>Les Miserables</i> Co-occurrence</h1> -->
 
 <aside style="margin-top:80px;">
-<p>Order: <select id="order">
+Order: <select id="order">
   <option value="name">by Name</option>
   <option value="count">by Frequency</option>
   <option value="group">by Cluster</option>
 </select>
-
-<p>This matrix diagram visualizes character co-occurrences in Victor Hugoâ€™s <i><a href="http://en.wikipedia.org/wiki/Les_MisÃ©rables">Les MisÃ©rables</a></i>.
-
-<p>Each colored cell represents two characters that appeared in the same chapter; darker cells indicate characters that co-occurred more frequently.
-
-<p>Use the drop-down menu to reorder the matrix and explore the data.
-
-<p>Built with <a href="http://d3js.org/">d3.js</a>.
 </aside>
 
 <script>
 
-var margin = {top: 80, right: 0, bottom: 10, left: 800},
+var margin = {top: 200, right: 50, bottom: 50, left: 200},
     width = 600,
     height = 600;
+
+var dmargin = {top: 50, right: 50, bottom: 50, left: 50},
+    dwidth = 350,
+    dheight = 200;
+
 
 var x = d3.scale.ordinal().rangeBands([0, width]),
     z = d3.scale.linear().domain([0, 15]).clamp(true),
@@ -257,21 +273,67 @@ var x = d3.scale.ordinal().rangeBands([0, width]),
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-    .style("margin-left", - margin.left + "px")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+var allFirms = [];
+
+var catxScale = d3.scale.ordinal().rangeRoundBands([0, dwidth], .2);
+var catyScale = d3.scale.linear().range([dheight, 0]);
+
+var catxAxis = d3.svg.axis()
+.scale(catxScale)
+.orient("bottom");
+
+var catyAxis = d3.svg.axis()
+.scale(catyScale)
+.orient("right");
+
+var catsvg = d3.select("body").append("svg")
+.attr("width", dwidth + dmargin.left + dmargin.right)
+.attr("height", dheight + dmargin.top + dmargin.bottom)
+.append("g")
+// .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
-  // console.log(firms);
   var indices = {}
+  allFirms = firms;
   firms.forEach(function(d){
     indices[d.permalink] = d.index;
   });
-  
+
+  firms = firms.map(function(d){
+    if (d.name == "Intel Capital") {
+      d.round['seed'] += d.round['other'];
+      d.round['other'] = 0;
+    }
+    return d;
+  })
+
+  catxScale.domain(d3.keys(firms[0]['cat']).map(function(d) {
+    return d.split("_").join(" ");
+  }));
+  catyScale.domain([0, d3.max(firms.map(function(d) {
+    return d3.max(d3.values(d['cat']));}))
+  ]);
+
+  makebyCat();
+
   var nodes = firms.map(function(d) {
+    var group = null;
+    var early = d.round['seed'] + d.round['a'];
+    var mid = d.round['b'] + d.round['c'];
+    var late = d.round['d+'] + d.round['other'];
+    if (early > mid && early > late) {
+      group = 1;
+    } else if (mid > early && mid > late) {
+      group = 2;
+    } else {
+      group = 3;
+    }
+
     return {'name':d.name, 
-            'group':1,
+            'group':group,
             'permalink':d.permalink,
             'index':d.index,
             'count':0}
@@ -295,7 +357,7 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     });
   });
 
-  console.log(matrix);
+  // console.log(matrix);
 
   // Precompute the orders.
   var orders = {
@@ -327,7 +389,9 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       .attr("y", x.rangeBand() / 2)
       .attr("dy", ".32em")
       .attr("text-anchor", "end")
-      .text(function(d, i) { return nodes[i].name; });
+      .text(function(d, i) { return nodes[i].name; })
+      .on("mouseover", mouseoverFirm)
+      .on("mouseout", mouseoutFirm);
 
   var column = svg.selectAll(".column")
       .data(matrix)
@@ -343,7 +407,9 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       .attr("y", x.rangeBand() / 2)
       .attr("dy", ".32em")
       .attr("text-anchor", "start")
-      .text(function(d, i) { return nodes[i].name; });
+      .text(function(d, i) { return nodes[i].name; })
+      .on("mouseover", mouseoverFirm)
+      .on("mouseout", mouseoutFirm)
 
   function row(row) {
     var cell = d3.select(this).selectAll(".cell")
@@ -360,12 +426,27 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   }
 
   function mouseover(p) {
+    // console.log(p);
     d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
     d3.selectAll(".column text").classed("active", function(d, i) { return i == p.x; });
   }
 
   function mouseout() {
     d3.selectAll("text").classed("active", false);
+  }
+
+  function mouseoverFirm(p) {
+    // console.log(p);
+
+    d3.selectAll(".row text").classed("active", function(d, i) { return i == p[0].y; });
+    d3.selectAll(".column text").classed("active", function(d, i) { return i == p[0].y; });
+
+    byCat(p);
+  }
+
+  function mouseoutFirm() {
+    d3.selectAll("text").classed("active", false);
+    catsvg.selectAll("rect").remove();
   }
 
   d3.select("#order").on("change", function() {
@@ -395,5 +476,54 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     d3.select("#order").property("selectedIndex", 1).node().focus();
   }, 5000);
 });
+
+function makebyCat() {
+  catsvg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(" + 0 + "," + dheight + ")")
+  .call(catxAxis)
+  .selectAll("text")
+  .attr("y", 0)
+  .attr("x", 9)
+  .attr("dy", ".35em")
+  .attr("transform", "rotate(90)")
+  .style("text-anchor", "start");
+
+  catsvg.append("g")
+  .attr("class", "y axis")
+  .attr("transform", "translate(" + dwidth + "," + 0 + ")")
+  .call(catyAxis);
+  // .append("text")
+  // .attr("transform", "rotate(-90)")
+  // .attr("y", -9)
+  // .attr("dy", ".71em")
+  // .style("text-anchor", "end")
+  // .text("Solar Radiation");
+}
+
+function byCat(p){
+  allFirms.forEach(function(d){
+    if (p[0]['y'] == d['index']) {
+        // console.log(d['cat']);
+        tdata = d3.keys(d['cat']).map(function(j) {
+          return {'key':j, 'val':d['cat'][j]}
+        });
+        catsvg.selectAll("rect")
+        .data(tdata)
+        .enter().append("rect")
+        .attr("x", function(d, i) {
+            // console.log(d,i);
+            return catxScale(d.key);
+        })
+        .attr("y", function(d) {
+            return catxScale(d.val);
+        })
+        .attr("width", catxScale.rangeBand())
+        .attr("height", function(d) {
+            return dheight - catxScale(d.val);
+        });
+      }
+  });
+}
 
 </script>
