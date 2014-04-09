@@ -302,17 +302,6 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     indices[d.permalink] = d.index;
   });
 
-  // fix errors
-  firms = firms.map(function(d){
-    if (d.name == "Intel Capital") {
-      d.round['seed'] += d.round['other'];
-      d.round['other'] = 0;
-    } else if (d.name == "Summit Partners") {
-      d['cat']['other'] = d['cat']['other']/3
-    }
-    return d;
-  })
-
   catxScale.domain(d3.keys(firms[0]['cat']).map(function(d) {
     return d.split("_").join(" ");
   }));
