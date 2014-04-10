@@ -40,9 +40,14 @@ text {
             stroke: steelblue;
         }
 
+.country{
+  fill:silver;
+}
+
 
 </style>
 <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="detail.js"></script>
 
 <!-- <header>
@@ -122,6 +127,16 @@ var line = d3.svg.line()
        .x(function(d,i){return linexScale(d.year);})
        .y(function(d){return lineyScale(d.val);});
 
+var mapsvg = d3.select("body").append("svg")
+  .attr("width", dwidth + dmargin.left + dmargin.right)
+  .attr("height", dheight + dmargin.top + dmargin.bottom)
+  .append("g")
+
+var projection = d3.geo.albersUsa().scale(400).translate([dwidth/2 , dheight/2]);//.precision(.1);
+var path = d3.geo.path().projection(projection);
+
+var heatmap = d3.scale.linear();
+
 
 
 d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
@@ -147,6 +162,13 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   })),d3.max(firms.map(function(d){
     return d3.max(d3.keys(d.time).map(function(e){return d.time[e]}))
   }))])
+
+  heatmap.domain([0,d3.max(allFirms.map(function(d){
+    return d3.max(d3.keys(d['state']).map(function(e){ return d['state'][e]}))
+  }))])
+  .interpolate(d3.interpolateRgb)
+  .range(["silver","orangered"])
+  .clamp(true);
 
 
   makebyCat();
@@ -279,6 +301,7 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
 
     byCat(p);
     drawline(p);
+    updateMap(p);
 
   }
 
@@ -341,6 +364,7 @@ function makebyCat() {
 
   setcatav();
   lineGraph();
+  createMap();
 
 }
 
@@ -433,7 +457,7 @@ function drawline(p){
     if (p[0]['y'] == d['index']) {
        //console.log(d);
        tdata = d3.keys(d['time']).map(function(j) {
-        console.log(j);
+        //console.log(j);
         
           return {'year':j, 'val':d['time'][j]}
         
@@ -450,6 +474,49 @@ function drawline(p){
     .attr("class","line")
     .attr("d",line)
 
+}
+
+function createMap (){
+  d3.json("us-named.json", function(data) {
+
+
+
+    var usMap = topojson.feature(data,data.objects.states).features
+    //console.log(usMap);
+
+   var states = mapsvg.selectAll(".country").data(usMap).enter()
+        .append("path")
+        .attr("d",path)
+        .attr("class","country")
+        .attr("id",function(d){return d.properties.code;})
+        
+});
+}
+
+function updateMap(p){
+
+  var tdata;
+  allFirms.forEach(function(d){
+    if (p[0]['y'] == d['index']) {
+       //console.log(d);
+       tdata = d3.keys(d['state']).map(function(j) {
+        //console.log(j);
+        
+          return {'state':j, 'val':d['state'][j]}
+        
+        
+      });
+    }
+  });
+
+  tdata = tdata.filter(function(d){return d.state != ""});
+
+  tdata.forEach(function(d){
+    var selector = "#"+d.state;
+    //console.log(d);
+    mapsvg.select(selector)
+    .style("fill",heatmap(d.val))
+  })
 }
 
 
