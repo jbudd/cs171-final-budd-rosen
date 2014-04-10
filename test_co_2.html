@@ -271,6 +271,7 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     d3.selectAll(".column text").classed("active", function(d, i) { return i == p[0].y; });
 
     byCat(p);
+    
   }
 
   function mouseoutFirm() {
@@ -331,6 +332,7 @@ function makebyCat() {
   // .text("Solar Radiation");
 
   setcatav();
+  lineGraph();
 
 }
 
@@ -395,6 +397,23 @@ function byCat(p){
 }
 
 function lineGraph(p){
+  linesvg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(" + 0 + "," + dheight + ")")
+  .call(linexAxis)
+    .selectAll("text")
+  .attr("y", 0)
+  .attr("x", 9)
+  .attr("dy", ".35em")
+  .attr("transform", "rotate(90)")
+  .style("text-anchor", "start");
+
+
+  linesvg.append("g")
+  .attr("class", "y axis")
+  .attr("transform", "translate(" + dwidth + "," + 0 + ")")
+  .call(lineyAxis);
+
 
 }
 
