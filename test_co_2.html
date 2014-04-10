@@ -34,6 +34,11 @@ text {
 .axis text {
   text-transform: capitalize;
 }
+ .line {
+            fill:none;
+            stroke-width: 1.5px;
+            stroke: steelblue;
+        }
 
 
 </style>
@@ -114,8 +119,8 @@ var lineyAxis = d3.svg.axis()
   .orient("right")
 
 var line = d3.svg.line()
-       .x(function(d,i){return linexScale(d.x);})
-       .y(function(d){return lineyScale(d.y);});
+       .x(function(d,i){return linexScale(d.year);})
+       .y(function(d){return lineyScale(d.val);});
 
 
 
@@ -270,8 +275,11 @@ d3.json("allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     d3.selectAll(".row text").classed("active", function(d, i) { return i == p[0].y; });
     d3.selectAll(".column text").classed("active", function(d, i) { return i == p[0].y; });
 
+
+
     byCat(p);
-    
+    drawline(p);
+
   }
 
   function mouseoutFirm() {
@@ -414,6 +422,33 @@ function lineGraph(p){
   .attr("transform", "translate(" + dwidth + "," + 0 + ")")
   .call(lineyAxis);
 
+}
+
+function drawline(p){
+  linesvg.selectAll(".line").remove();
+
+  var tdata;
+
+  allFirms.forEach(function(d){
+    if (p[0]['y'] == d['index']) {
+       //console.log(d);
+       tdata = d3.keys(d['time']).map(function(j) {
+        console.log(j);
+        
+          return {'year':j, 'val':d['time'][j]}
+        
+        
+      });
+    }
+  });
+
+ 
+     
+  
+  linesvg.append("path")
+    .datum(tdata.filter(function(d){return d.year < 2014}))
+    .attr("class","line")
+    .attr("d",line)
 
 }
 
