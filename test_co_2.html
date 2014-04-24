@@ -3,8 +3,6 @@
 
 <style>
 
-
-
 .background {
   fill: #f1f1f1;
 }
@@ -50,6 +48,11 @@ text {
   fill:#fff;
   stroke-width: 1px;
   stroke: steelblue;
+}
+
+.active-cell {
+  fill: steelblue !important;
+  fill-opacity: 1 !important;
 }
 
 
@@ -205,10 +208,9 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   var n = firms.length;
 
   nodes.forEach(function(node, i) {
-    matrix[i] = d3.range(n).map(function(j) { return {x: j, y: i, z: 0}; });
+    matrix[i] = d3.range(n).map(function(j) { return {x: j, y: i, z: 0.0001}; });
   });
 
-  // console.log(nodes);
   
 
   // Convert links to matrix; count character occurrences.
@@ -219,9 +221,14 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     });
   });
 
-   //console.log(matrix);
+  // firms.forEach(function(links) {
+  //   d3.keys(links.cooc).forEach(function(link) {
+  //     matrix[links.index][indices[link]].z = Math.floor(matrix[links.index][indices[link]].z);
+  //     nodes[links.index].count = Math.floor(nodes[links.index].count);
+  //   });
+  // });
 
-   //console.log(firms);
+   
 
   // Precompute the orders.
   var orders = {
@@ -286,11 +293,11 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
         .style("fill-opacity", function(d) { return z(d.z); })
         .style("fill", function(d) { return nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : null; })
         .on("mouseover", mouseover)
-        .on("mouseout", mouseout);
+        .on("mouseout", mouseout)
+        .on("click", cellclick);
   }
 
   function mouseover(p) {
-    // console.log(p);
     d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
     d3.selectAll(".column text").classed("active", function(d, i) { return i == p.x; });
   }
@@ -299,8 +306,15 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     d3.selectAll("text").classed("active", false);
   }
 
+  function cellclick(p) {
+    // console.log(d3.selectAll(".active-cell"));
+
+    p.z = Math.floor(p.z);
+    d3.selectAll(".cell").classed("active-cell", function(d, i) {return d.y == p.y && d.x == p.x});
+
+  }
+
   function mouseoverFirm(p) {
-    // console.log(p);
 
     d3.selectAll(".row text").classed("active", function(d, i) { return i == p[0].y; });
     d3.selectAll(".column text").classed("active", function(d, i) { return i == p[0].y; });
@@ -308,8 +322,11 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
 
 
     byCat(p);
+    
+    /* why are these fuctions called here? */
     drawline(p);
     updateMap(p);
+    /***************************************/
 
   }
 
@@ -327,7 +344,7 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   function order(value) {
     x.domain(orders[value]);
 
-    var t = svg.transition().duration(2500);
+    var t = svg.transition().duration(1000);
 
     t.selectAll(".row")
         .delay(function(d, i) { return x(i) * 4; })
@@ -344,7 +361,7 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   var timeout = setTimeout(function() {
     order("count");
     d3.select("#order").property("selectedIndex", 1).node().focus();
-  }, 5000);
+  }, 2500);
 });
 
 function makebyCat() {
@@ -385,7 +402,6 @@ function setcatav() {
   .data(tdata)
   .enter().append("rect")
   .attr("x", function(d, i) {
-      // console.log(d,i);
       return catxScale(d.key);
   })
   .attr("y", function(d) {
@@ -396,7 +412,6 @@ function setcatav() {
       return dheight - catyScale(d.val);
   })
   .attr("transform", function(d) {
-    //console.log(d);
     return "translate(" + 0 + "," + (0) + ")";
   });
 }
@@ -405,7 +420,6 @@ function byCat(p){
   catsvg.selectAll("rect").remove();
   allFirms.forEach(function(d){
     if (p[0]['y'] == d['index']) {
-      // console.log(d['cat']);
       var tdata = d3.keys(d['cat']).map(function(j) {
         return {'key':j, 'val':d['cat'][j]}
       });
@@ -413,7 +427,6 @@ function byCat(p){
       .data(tdata)
       .enter().append("rect")
       .attr("x", function(d, i) {
-          // console.log(d,i);
           return catxScale(d.key);
       })
       .attr("y", function(d) {
@@ -424,7 +437,6 @@ function byCat(p){
           return dheight - catyScale(d.val);
       })
       .attr("transform", function(d) {
-        //console.log(d);
         return "translate(" + 0 + "," + (0) + ")";
       });
     }
@@ -458,9 +470,7 @@ function drawline(p){
 
   allFirms.forEach(function(d){
     if (p[0]['y'] == d['index']) {
-       //console.log(d);
        tdata = d3.keys(d['time']).map(function(j) {
-        //console.log(j);
         
           return {'year':j, 'val':d['time'][j]}
         
@@ -485,7 +495,6 @@ function createMap (){
 
 
     var usMap = topojson.feature(data,data.objects.states).features
-    //console.log(usMap);
 
    var states = mapsvg.selectAll(".country").data(usMap).enter()
         .append("path")
@@ -501,9 +510,7 @@ function updateMap(p){
   var tdata;
   allFirms.forEach(function(d){
     if (p[0]['y'] == d['index']) {
-       //console.log(d);
        tdata = d3.keys(d['state']).map(function(j) {
-        //console.log(j);
         
           return {'state':j, 'val':d['state'][j]}
         
@@ -516,7 +523,6 @@ function updateMap(p){
 
   tdata.forEach(function(d){
     var selector = "#"+d.state;
-    //console.log(d);
     mapsvg.select(selector)
     .style("fill",heatmap(d.val))
   })
