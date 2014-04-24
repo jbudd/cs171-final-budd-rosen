@@ -72,7 +72,7 @@ Order: <select id="order">
 </aside>
 
 <script>
-
+var lastClick = null;
 var margin = {top: 200, right: 50, bottom: 50, left: 200},
     width = 600,
     height = 600;
@@ -151,6 +151,8 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   firms.forEach(function(d){
     indices[d.permalink] = d.index;
   });
+
+  // console.log(indices);
 
   catxScale.domain(d3.keys(firms[0]['cat']).map(function(d) {
     return d.split("_").join(" ");
@@ -248,7 +250,7 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   var row = svg.selectAll(".row")
       .data(matrix)
     .enter().append("g")
-      .attr("class", "row")
+      .attr("class", function(d, i) {return "row" + " " + nodes[i].permalink + " " + i})
       .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
       .each(row);
 
@@ -267,8 +269,8 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   var column = svg.selectAll(".column")
       .data(matrix)
     .enter().append("g")
-      .attr("class", "column")
-      .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+      .attr("class", function(d, i) {return "column" + " " + nodes[i].permalink + " " +i})
+      .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; })
 
   column.append("line")
       .attr("x1", -width);
@@ -294,9 +296,9 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
         .style("fill", function(d) { return nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : null; })
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
-        .on("click", cellclick);
+        .on("click", cellClicked);
   }
-
+  
   function mouseover(p) {
     d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
     d3.selectAll(".column text").classed("active", function(d, i) { return i == p.x; });
@@ -306,12 +308,36 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     d3.selectAll("text").classed("active", false);
   }
 
+  function cellClicked(p) {
+    d3.selectAll(".cell").classed("active-cell", false);
+    if(p != lastClick) {
+      d3.selectAll(".cell").classed("active-cell", function(d, i) {return d.y == p.y && d.x == p.x});
+      lastClick = p;
+      console.log("build graphs");
+    } else {
+      lastClick = null;
+      console.log("set averages");
+    }
+
+    console.log(nodes[p.y].name, nodes[p.x].name);
+  }
+
   function cellclick(p) {
-    // console.log(d3.selectAll(".active-cell"));
-
-    p.z = Math.floor(p.z);
-    d3.selectAll(".cell").classed("active-cell", function(d, i) {return d.y == p.y && d.x == p.x});
-
+    // console.log(p);
+    var clicked = d3.select(".active-cell");
+    d3.selectAll(".cell").classed("active-cell", false);
+    if (clicked[0][0] != null) {
+      if (clicked.attr("x") == x(p.x)) {
+        console.log("set averages");
+      } else {
+        d3.selectAll(".cell").classed("active-cell", function(d, i) {return d.y == p.y && d.x == p.x});
+        console.log("rebuild graphs");
+      }
+    } else {
+      // only first click after load
+      d3.selectAll(".cell").classed("active-cell", function(d, i) {return d.y == p.y && d.x == p.x});
+      console.log("build graphs");
+    }
   }
 
   function mouseoverFirm(p) {
