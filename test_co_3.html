@@ -456,22 +456,7 @@ function byCat(p0, p1){
       });
     }
   });
-  // console.log(f0, f1);
-
-  // var cat = catsvg.selectAll(".cat")
-  // .data(f0)
-  // .enter().append("g")
-  // .attr("class", "cat")
-  // .attr("transform", function(d) { return "translate(" + 0 + "," + 0 + ")"; });
-
-  // cat.selectAll("rect")
-  // .data(function(d) { return d.val; })
-  // .enter().append("rect")
-  // .attr("width", catxScale.rangeBand())
-  // .attr("x", function(d) { return catxScale(d.key); })
-  // .attr("y", function(d) { return catyScale(d.val); })
-  // .attr("height", function(d) { return dheight - catyScale(d.val); })
-
+  
   catsvg.selectAll(".f0")
   .data(f0)
   .enter().append("rect")
@@ -491,31 +476,6 @@ function byCat(p0, p1){
   .attr("height", function(d) { return dheight - catyScale(d.val); })
   .attr("transform", function(d) { return "translate(" + 0 + "," + 0 + ")"; })
   .attr("class", "f1");
-
-
-  // allFirms.forEach(function(d){
-  //   if (p[0]['y'] == d['index']) {
-  //     var tdata = d3.keys(d['cat']).map(function(j) {
-  //       return {'key':j, 'val':d['cat'][j]}
-  //     });
-  //     catsvg.selectAll("rect")
-  //     .data(tdata)
-  //     .enter().append("rect")
-  //     .attr("x", function(d, i) {
-  //         return catxScale(d.key);
-  //     })
-  //     .attr("y", function(d) {
-  //         return catyScale(d.val);
-  //     })
-  //     .attr("width", catxScale.rangeBand())
-  //     .attr("height", function(d) {
-  //         return dheight - catyScale(d.val);
-  //     })
-  //     .attr("transform", function(d) {
-  //       return "translate(" + 0 + "," + (0) + ")";
-  //     });
-  //   }
-  // });
 }
 
 function lineGraph(p){
