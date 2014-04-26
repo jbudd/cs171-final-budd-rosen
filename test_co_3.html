@@ -69,7 +69,7 @@ text {
 </style>
 <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
-<script src="detail.js"></script>
+<!-- <script src="detail.js"></script> -->
 
 
 
@@ -105,7 +105,6 @@ var svg = d3.select("body").append("svg")
 var allFirms = [];
 
 var catxScale = d3.scale.ordinal().rangeRoundBands([0, dwidth], .2);
-var catxfirmScale = d3.scale.ordinal().rangeRoundBands([0, catxScale.rangeBand()]).domain([0, 1]);
 var catyScale = d3.scale.linear().range([dheight, 0]);
 
 var catxAxis = d3.svg.axis()
@@ -197,6 +196,8 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
 
 
   makebyCat();
+  lineGraph();
+  createMap();
 
   var nodes = firms.map(function(d) {
     var group = null;
@@ -327,10 +328,12 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       lastClick = p;
       console.log("build graphs");
       byCat(nodes[p.y], nodes[p.x]);
+      drawline(nodes[p.y], nodes[p.x]);
     } else {
       lastClick = null;
       console.log("set averages");
-      setcatav()
+      setcatav();
+      lineave();
     }
 
     console.log(nodes[p.y].name, nodes[p.x].name);
@@ -406,8 +409,8 @@ function makebyCat() {
   setcatav();
 
   /* why are these fuctions called here? */
-  lineGraph();
-  createMap();
+  // lineGraph();
+  // createMap();
 
 }
 
@@ -483,7 +486,7 @@ function lineGraph(p){
   .attr("class", "x axis")
   .attr("transform", "translate(" + 0 + "," + dheight + ")")
   .call(linexAxis)
-    .selectAll("text")
+  .selectAll("text")
   .attr("y", 0)
   .attr("x", 9)
   .attr("dy", ".35em")
@@ -496,31 +499,52 @@ function lineGraph(p){
   .attr("transform", "translate(" + dwidth + "," + 0 + ")")
   .call(lineyAxis);
 
+  lineave();
 }
 
-function drawline(p){
+function lineave() {
   linesvg.selectAll(".line").remove();
-
-  var tdata;
-
+  
+  var lineav = {};
   allFirms.forEach(function(d){
-    if (p[0]['y'] == d['index']) {
-       tdata = d3.keys(d['time']).map(function(j) {
-        
-          return {'year':j, 'val':d['time'][j]}
-        
-        
-      });
-    }
+    d3.keys(d['time']).map(function(j){
+      lineav[j] = (lineav[j] != null) ? lineav[j] + d['time'][j] : d['time'][j];
+    })
+  })
+
+  var tdata = d3.keys(lineav).map(function(j) {
+    return {'year':j, 'val':lineav[j]/allFirms.length}
   });
 
- 
-     
-  
+  console.log(lineav);
+
   linesvg.append("path")
-    .datum(tdata.filter(function(d){return d.year < 2014}))
-    .attr("class","line")
-    .attr("d",line)
+  .datum(tdata.filter(function(d){return d.year < 2014}))
+  .attr("class", "line")
+  .attr("d", line);
+
+}
+
+function drawline(f0, f1){
+  linesvg.selectAll(".line").remove();
+
+  // var tdata;
+
+  // allFirms.forEach(function(d){
+  //   if (p[0]['y'] == d['index']) {
+  //      tdata = d3.keys(d['time']).map(function(j) {
+        
+  //         return {'year':j, 'val':d['time'][j]}
+        
+        
+  //     });
+  //   }
+  // });
+
+  // linesvg.append("path")
+  //   .datum(tdata.filter(function(d){return d.year < 2014}))
+  //   .attr("class","line")
+  //   .attr("d",line)
 
 }
 
