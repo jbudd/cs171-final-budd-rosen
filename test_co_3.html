@@ -48,13 +48,25 @@ text {
   text-transform: capitalize;
 }
 
-.line {
-  fill:none;
+.year > .line {
+  fill: none;
   stroke-width: 1.5px;
   stroke: steelblue;
 }
 
-.country{
+.year > .f0 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: green;
+}
+
+.year > .f1 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: pink;
+}
+
+.country {
   fill:#fff;
   stroke-width: 1px;
   stroke: steelblue;
@@ -125,15 +137,16 @@ var linesvg = d3.select("body").append("svg")
 .attr("width", dwidth + dmargin.left + dmargin.right)
 .attr("height", dheight + dmargin.top + dmargin.bottom)
 .append("g")
+.attr("class", "year")
 
-var linexScale = d3.scale.linear()
-                .range([0,dwidth])
+var linexScale = d3.scale.linear().range([0, dwidth]);
 
 var lineyScale = d3.scale.linear().range([dheight,0]);
 
 var linexAxis = d3.svg.axis()
   .scale(linexScale)
   .orient("bottom")
+  .tickFormat(d3.format("04d"))
 
 var lineyAxis = d3.svg.axis()
   .scale(lineyScale)
@@ -156,6 +169,17 @@ var heatmap = d3.scale.linear();
 
 
 d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
+  firms.forEach(function(d){
+    if (d['name'] == "Start-Up Chile") {
+      d['time'][2010] = d['time'][2010]/2
+      d['time'][2011] = d['time'][2011]/2
+      d['time'][2012] = d['time'][2012]/2
+      d['time'][2013] = d['time'][2013]/2
+      d['time'][2014] = d['time'][2014]/2
+    }
+  });
+
+
   var indices = {}
   allFirms = firms;
   firms.forEach(function(d){
@@ -276,8 +300,8 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       .attr("dy", ".32em")
       .attr("text-anchor", "end")
       .text(function(d, i) { return nodes[i].name; })
-      .on("mouseover", mouseoverFirm)
-      .on("mouseout", mouseoutFirm);
+      // .on("mouseover", mouseoverFirm)
+      // .on("mouseout", mouseoutFirm);
 
   var column = svg.selectAll(".column")
       .data(matrix)
@@ -294,8 +318,8 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       .attr("dy", ".32em")
       .attr("text-anchor", "start")
       .text(function(d, i) { return nodes[i].name; })
-      .on("mouseover", mouseoverFirm)
-      .on("mouseout", mouseoutFirm)
+      // .on("mouseover", mouseoverFirm)
+      // .on("mouseout", mouseoutFirm)
 
   function row(row) {
     var cell = d3.select(this).selectAll(".cell")
@@ -341,24 +365,24 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
 
 
 
-  function mouseoverFirm(p) {
+  // function mouseoverFirm(p) {
 
-    d3.selectAll(".row text").classed("active", function(d, i) { return i == p[0].y; });
-    d3.selectAll(".column text").classed("active", function(d, i) { return i == p[0].y; });
+  //   d3.selectAll(".row text").classed("active", function(d, i) { return i == p[0].y; });
+  //   d3.selectAll(".column text").classed("active", function(d, i) { return i == p[0].y; });
 
 
 
-    // byCat(p);
+  //   // byCat(p);
     
-    drawline(p);
-    updateMap(p);
-  }
+  //   drawline(p);
+  //   updateMap(p);
+  // }
 
-  function mouseoutFirm() {
-    d3.selectAll("text").classed("active", false);
-    catsvg.selectAll("rect").remove();
-    setcatav();
-  }
+  // function mouseoutFirm() {
+  //   d3.selectAll("text").classed("active", false);
+  //   catsvg.selectAll("rect").remove();
+  //   setcatav();
+  // }
 
   d3.select("#order").on("change", function() {
     clearTimeout(timeout);
@@ -407,11 +431,6 @@ function makebyCat() {
 
 
   setcatav();
-
-  /* why are these fuctions called here? */
-  // lineGraph();
-  // createMap();
-
 }
 
 function setcatav() {
@@ -503,7 +522,7 @@ function lineGraph(p){
 }
 
 function lineave() {
-  linesvg.selectAll(".line").remove();
+  linesvg.selectAll("path").remove();
   
   var lineav = {};
   allFirms.forEach(function(d){
@@ -516,35 +535,40 @@ function lineave() {
     return {'year':j, 'val':lineav[j]/allFirms.length}
   });
 
-  console.log(lineav);
+  // console.log(lineav);
 
   linesvg.append("path")
   .datum(tdata.filter(function(d){return d.year < 2014}))
   .attr("class", "line")
   .attr("d", line);
-
 }
 
-function drawline(f0, f1){
-  linesvg.selectAll(".line").remove();
+function drawline(p0, p1){
+  linesvg.selectAll("path").remove();
+  var f0 = null;
+  var f1 = null;
+  allFirms.forEach(function(d){
+    if (p0.index == d['index']) {
+      f0 = d3.keys(d.time).map(function(j) {
+        return {'year':j, 'val':d['time'][j]}
+      });
+    }
+    if (p1.index == d['index']) {
+      f1 = d3.keys(d.time).map(function(j) {
+        return {'year':j, 'val':d['time'][j]}
+      });
+    }
+  });
 
-  // var tdata;
+  linesvg.append("path")
+  .datum(f0.filter(function(d){return d.year < 2014}))
+  .attr("class", "f0")
+  .attr("d",line)
 
-  // allFirms.forEach(function(d){
-  //   if (p[0]['y'] == d['index']) {
-  //      tdata = d3.keys(d['time']).map(function(j) {
-        
-  //         return {'year':j, 'val':d['time'][j]}
-        
-        
-  //     });
-  //   }
-  // });
-
-  // linesvg.append("path")
-  //   .datum(tdata.filter(function(d){return d.year < 2014}))
-  //   .attr("class","line")
-  //   .attr("d",line)
+  linesvg.append("path")
+  .datum(f1.filter(function(d){return d.year < 2014}))
+  .attr("class", "f1")
+  .attr("d",line)
 
 }
 
