@@ -1,3 +1,96 @@
 body {
 	
 }
+
+#modal {
+	width: 500px;
+	min-height: 100px;
+	padding: 10px;
+	background-color: #fff;
+	border: 1px solid #000;
+	border-radius: 3px;
+	text-align: center;
+}
+
+#modal > #modal-header {
+	margin: 0px 0px 25px 0px;
+}
+
+h2 {
+	font-size: 200%
+}
+
+#modal > #modal-header > p {
+	margin: 6.25px 0px 0px 0px;
+}
+
+/*#modal > p {
+	
+}*/
+
+#modal > #modal-footer {
+	margin: 25px 0px 0px 0px;
+}
+
+#modal ul {
+	list-style: none;
+	margin: 0px auto;
+}
+
+#modal ul li {
+	float: left;
+	width: 100px;
+	height: 20px;
+	padding: 10px;
+	margin: 0px 19px;
+	border: 1px solid #000;
+	border-radius: 3px;
+	background-color: #fff;
+}
+
+.button-link {
+	text-decoration: none;
+	color: inherit;
+}
+
+#modal ul li:hover {
+	border: 1px solid #fff;
+	background-color: #000;
+	color: #fff;
+}
+
+#close:hover {
+	cursor: pointer;
+}
+
+header {
+	min-width: 960px; /* same width as #viz */
+	min-height: 50px;
+	margin: 0px 0px 25px 0px;
+	text-align: center;
+	background-color: pink;
+}
+
+#viz {
+	margin: 0px auto;
+	width: 960px;
+	height: 960px;
+	background-color: pink;
+}
+
+footer {
+	min-width: 960px; /* same width as #viz */
+	min-height: 50px;
+	margin: 25px 0px 0px 0px;
+	text-align: center;
+	background-color: pink;
+}
+
+footer p {
+	padding: 3px;
+}
+
+.link {
+	text-decoration: underline;
+	color: inherit;
+}
