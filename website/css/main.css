@@ -1,5 +1,5 @@
 body {
-	
+	font-family: Helvetica, sans-serif;
 }
 
 #modal {
@@ -64,22 +64,67 @@ h2 {
 }
 
 header {
-	min-width: 960px; /* same width as #viz */
+	min-width: 1325px; /* same width as #all */
 	min-height: 50px;
 	margin: 0px 0px 25px 0px;
+	padding: 10px 0px 10px 0px;
 	text-align: center;
 	background-color: pink;
 }
 
-#viz {
+h1 {
+	font-size: 200%;
+}
+
+#all {
+	width: 100%; 
+	min-width: 1325px; /* sould be same as #all-viz */
+	min-height: 950px; /* sould be same as #co-viz and #detail-viz */
+}
+
+#all-viz {
+	/*max-width: 95%;*/
+	width: 1325px; /* sould be same as #co-viz + #detail-viz + margin*/
+	min-height: 950px; /* sould be same as #co-viz and #detail-viz */
 	margin: 0px auto;
-	width: 960px;
-	height: 960px;
+}
+
+#co-viz {
+	width: 850px;
+	height: 950px;
 	background-color: pink;
+	float: left;
+}
+
+#detail-viz {
+	min-width: 450px;
+	min-height: 950px; /* sould be #detail-viz * 3 + margin */
+	float: right;
+}
+
+.detail-viz {
+	width: 450px;
+	height: 300px;
+	background-color: green;
+	margin: 25px 0px 25px 25px;
+}
+
+#cat-viz {
+	margin-top: 0px;
+}
+
+/*#map-viz {
+	width: 450px;
+	height: 300px;
+	background-color: pink;
+}*/
+
+#line-viz {
+	margin-bottom: 0px;
 }
 
 footer {
-	min-width: 960px; /* same width as #viz */
+	min-width: 1325; /* same width as #all */
 	min-height: 50px;
 	margin: 25px 0px 0px 0px;
 	text-align: center;
@@ -93,4 +138,9 @@ footer p {
 .link {
 	text-decoration: underline;
 	color: inherit;
+}
+
+.link:hover {
+	text-decoration: underline;
+	color: green;
 }
