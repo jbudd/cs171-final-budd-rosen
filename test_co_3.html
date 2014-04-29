@@ -81,6 +81,7 @@ text {
 </style>
 <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <!-- <script src="detail.js"></script> -->
 
 
@@ -92,6 +93,12 @@ Order: <select id="order">
   <option value="group">by Cluster</option>
 </select>
 </aside>
+
+<form>
+  <input type ="button" name = "1" value = "1">
+  <input type ="button" name = "2" value = "2">
+</form>
+
 
 <script>
 var lastClick = null;
@@ -165,6 +172,9 @@ var projection = d3.geo.albersUsa().scale(400).translate([dwidth/2 , dheight/2])
 var path = d3.geo.path().projection(projection);
 
 var heatmap = d3.scale.linear();
+
+d3.select("input[value=\"1\"]").on("click", updateMap);
+d3.select("input[value=\"2\"]").on("click", updateMap);
 
 
 
@@ -353,6 +363,7 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       console.log("build graphs");
       byCat(nodes[p.y], nodes[p.x]);
       drawline(nodes[p.y], nodes[p.x]);
+      updateMap(nodes[p.y], nodes[p.x]);
     } else {
       lastClick = null;
       console.log("set averages");
@@ -588,11 +599,42 @@ function createMap (){
 });
 }
 
-function updateMap(p){
+function updateMap(p0,p1){
+
+  var buttonnames = [p0.name,p1.name]
+  var p = p0;
+
+  var button = mapsvg.selectAll("circle")
+    .data(buttonnames)
+    .enter()
+    .append("circle")
+    .attr("type","button")
+    .attr("class","button")
+    .attr("r","9")
+    .style("fill",function(d,i){if(i==0){return "steelblue"}else{return "pink"}})
+    .attr("transform",function(d,i){
+      var x = 22*i + 180;
+      var y =  220
+      return "translate("+x+","+y+")"
+    })
+    .on("click",function(d,i){
+      if(i==0){
+        p = p0;
+      }else{
+        p = p1;
+      }
+    })
 
   var tdata;
+  
+  // if(){
+  //   p = p0;
+  // }else{
+  //   p = p1;
+  // }
+  //console.log(p[0]);
   allFirms.forEach(function(d){
-    if (p[0]['y'] == d['index']) {
+    if (p['index'] == d['index']) {
        tdata = d3.keys(d['state']).map(function(j) {
         
           return {'state':j, 'val':d['state'][j]}
