@@ -9,5 +9,7 @@ $(function() {
 		overlayClose: false,
 		closeOnEscape: false
 	});
+
+	$("#close").click(function(){ $("#modal").trigger("closeModal"); });
 });
 
