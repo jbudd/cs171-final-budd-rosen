@@ -15,6 +15,10 @@ text.active {
   fill: red;
 }
 
+.name {
+  cursor: pointer;
+}
+
 body {
   font-family: sans-serif;
 }
@@ -310,6 +314,8 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       .attr("dy", ".32em")
       .attr("text-anchor", "end")
       .text(function(d, i) { return nodes[i].name; })
+      .on("click", function(d, i) { window.open("http://www.crunchbase.com/organization/"+nodes[i].permalink,'_blank') })
+      .attr("class", "name");
       // .on("mouseover", mouseoverFirm)
       // .on("mouseout", mouseoutFirm);
 
@@ -328,6 +334,8 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       .attr("dy", ".32em")
       .attr("text-anchor", "start")
       .text(function(d, i) { return nodes[i].name; })
+      .on("click", function(d, i) { window.open("http://www.crunchbase.com/organization/"+nodes[i].permalink,'_blank') })
+      .attr("class", "name");
       // .on("mouseover", mouseoverFirm)
       // .on("mouseout", mouseoutFirm)
 
