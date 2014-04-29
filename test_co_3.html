@@ -363,12 +363,13 @@ d3.json("data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
       console.log("build graphs");
       byCat(nodes[p.y], nodes[p.x]);
       drawline(nodes[p.y], nodes[p.x]);
-      updateMap(nodes[p.y], nodes[p.x]);
+      drawDoubleMap(nodes[p.y], nodes[p.x]);
     } else {
       lastClick = null;
       console.log("set averages");
       setcatav();
       lineave();
+      mapAve();
     }
 
     console.log(nodes[p.y].name, nodes[p.x].name);
@@ -595,11 +596,18 @@ function createMap (){
         .attr("d",path)
         .attr("class","country")
         .attr("id",function(d){return d.properties.code;})
+
+
+    mapAve();
         
 });
+
+
 }
 
-function updateMap(p0,p1){
+function drawDoubleMap(p0,p1){
+  
+  mapsvg.selectAll("circle").remove();
 
   var buttonnames = [p0.name,p1.name]
   var p = p0;
@@ -619,30 +627,32 @@ function updateMap(p0,p1){
     })
     .on("click",function(d,i){
       if(i==0){
-        p = p0;
+        updateMap(p0);
+        mapsvg.selectAll("circle")
+        .style("fill-opacity",function(d,i){return 1- (i/2)})
       }else{
-        p = p1;
+        updateMap(p1);
+        mapsvg.selectAll("circle")
+        .style("fill-opacity",function(d,i){return .5 + (i/2)})
       }
     })
 
+    updateMap(p0);
+
+}
+
+function updateMap(p){
+
   var tdata;
   
-  // if(){
-  //   p = p0;
-  // }else{
-  //   p = p1;
-  // }
-  //console.log(p[0]);
   allFirms.forEach(function(d){
     if (p['index'] == d['index']) {
        tdata = d3.keys(d['state']).map(function(j) {
-        
           return {'state':j, 'val':d['state'][j]}
-        
-        
       });
     }
   });
+
 
   tdata = tdata.filter(function(d){return d.state != ""});
 
@@ -651,6 +661,34 @@ function updateMap(p0,p1){
     mapsvg.select(selector)
     .style("fill",heatmap(d.val))
   })
+
+}
+
+function mapAve(){
+
+  mapsvg.selectAll("circle").remove();
+
+  var state_ave = [];
+  var tdata;
+
+  allFirms.forEach(function(d){
+    d3.keys(d['state']).map(function(e){
+      state_ave[e] = (state_ave[e] != null) ? state_ave[e] + d['state'][e] : d['state'][e];
+    })
+  })
+
+  tdata = d3.keys(state_ave).map(function(d){
+    return {'state': d, 'val': state_ave[d]/allFirms.length}
+  })
+
+  tdata = tdata.filter(function(d){return d.state != ""});
+
+  tdata.forEach(function(d){
+    var selector = "#"+d.state;
+    mapsvg.select(selector)
+    .style("fill",heatmap(d.val))
+  })
+
 }
 
 
