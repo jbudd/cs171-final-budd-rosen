@@ -1,0 +1,72 @@
+.background {
+  fill: #f1f1f1;
+}
+
+line {
+  stroke: #fff;
+}
+
+text.active {
+  fill: red;
+}
+
+.name {
+  cursor: pointer;
+}
+
+text {
+  font-size: 10px;
+}
+
+.axis line, .axis path{
+  fill: none;
+  stroke: gray;
+  shape-rendering: crispEdges;
+}
+
+.cat rect {
+  fill: steelblue;
+  stroke-width: none;
+}
+
+.cat > .f0 {
+  fill: green;
+  stroke-width: none;
+}
+
+.cat > .f1 {
+  fill: pink;
+  stroke-width: none;
+}
+
+.axis text {
+  text-transform: capitalize;
+}
+
+.year > .line {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: steelblue;
+}
+
+.year > .f0 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: green;
+}
+
+.year > .f1 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: pink;
+}
+
+.country {
+  fill:#fff;
+  stroke-width: 1px;
+  stroke: steelblue;
+}
+
+.active-cell {
+  fill: steelblue !important;
+  fill-opacity: 1 !important;

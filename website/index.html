@@ -14,15 +14,16 @@
     <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
 
-    <!-- js -->
-    <script src="js/main.js"></script>
-    <script src="js/jquery.easyModal.js"></script>
-    <script src="js/viz.js"></script>
-    
     <!-- css -->
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/viz.css" />
+
+    <!-- js -->
+    <script src="js/jquery.easyModal.js"></script>
+    <script src="js/main.js"></script>
+    <!-- link in viz after page has loaded -->
+
   </head>
 
   <body>
@@ -32,11 +33,11 @@
     </header>
     <div id="all">
       <div id="all-viz">
-        <div id="co-viz"></div>
+        <div id="co-viz"><!-- main viz --></div>
         <div id="detail-viz">
-          <div class="detail-viz" id="cat-viz"></div>
-          <div class="detail-viz" id="map-viz"></div>
-          <div class="detail-viz" id="line-viz"></div>
+          <div class="detail-viz" id="cat-viz"><!-- cat viz --></div>
+          <div class="detail-viz" id="map-viz"><!-- map viz --></div>
+          <div class="detail-viz" id="line-viz"><!-- line viz --></div>
         </div>
       </div>
     </div>
@@ -61,6 +62,8 @@
           <li id="close">Visualization</li>
       </div>
     </div>
+
+    <script src="js/viz.js"></script>
   </body>
 </html>
 
