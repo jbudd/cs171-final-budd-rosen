@@ -1,12 +1,12 @@
 var lastClick = null;
 
-var margin = {top: 200, right: 50, bottom: 50, left: 200},
+var margin = {top: 175, right: 0, bottom: 0, left: 175},
     width = 600,
     height = 600;
 
-var dmargin = {top: 50, right: 50, bottom: 50, left: 50},
+var dmargin = {top: 0, right: 50, bottom: 100, left: 0},
     dwidth = 350,
-    dheight = 200;
+    dheight = 125;
 
 var x = d3.scale.ordinal().rangeBands([0, width]),
     z = d3.scale.linear().domain([0, 15]).clamp(true),
@@ -64,16 +64,12 @@ var mapsvg = d3.select("#map-viz").append("svg")
 .attr("width", dwidth + dmargin.left + dmargin.right)
 .attr("height", dheight + dmargin.top + dmargin.bottom)
 .append("g")
+.attr("transform", "translate(" + 0 + "," + 30 + ")")
 
 var projection = d3.geo.albersUsa().scale(400).translate([dwidth/2 , dheight/2]);//.precision(.1);
 var path = d3.geo.path().projection(projection);
 
 var heatmap = d3.scale.linear();
-
-d3.select("input[value=\"1\"]").on("click", updateMap);
-d3.select("input[value=\"2\"]").on("click", updateMap);
-
-
 
 d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   firms.forEach(function(d){
@@ -113,17 +109,11 @@ d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     return d3.max(d3.keys(d.time).map(function(e){return d.time[e]}))
   }))])
 
-  // heatmap.domain([0,d3.max(allFirms.map(function(d){
-  //   return d3.max(d3.keys(d['state']).map(function(e){ return d['state'][e]}))
-  // }))])
-  // .interpolate(d3.interpolateRgb)
-  // .range(["silver","steelblue"])
-  // .clamp(true);
-
   heatmap.domain([0, 15])
   .interpolate(d3.interpolateRgb)
-  .range(["#fff","steelblue"])
+  // .range(["#fff", "steelblue"])
   .clamp(true);
+
 
 
   makebyCat();
@@ -276,27 +266,6 @@ d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
     console.log(nodes[p.y].name, nodes[p.x].name);
   }
 
-
-
-  // function mouseoverFirm(p) {
-
-  //   d3.selectAll(".row text").classed("active", function(d, i) { return i == p[0].y; });
-  //   d3.selectAll(".column text").classed("active", function(d, i) { return i == p[0].y; });
-
-
-
-  //   // byCat(p);
-    
-  //   drawline(p);
-  //   updateMap(p);
-  // }
-
-  // function mouseoutFirm() {
-  //   d3.selectAll("text").classed("active", false);
-  //   catsvg.selectAll("rect").remove();
-  //   setcatav();
-  // }
-
   d3.select("#order").on("change", function() {
     // clearTimeout(timeout);
     order(this.value);
@@ -435,7 +404,7 @@ function lineGraph(p){
 }
 
 function lineave() {
-  linesvg.selectAll("path").remove();
+  linesvg.selectAll(".line-all").remove();
   
   var lineav = {};
   allFirms.forEach(function(d){
@@ -452,12 +421,12 @@ function lineave() {
 
   linesvg.append("path")
   .datum(tdata.filter(function(d){return d.year < 2014}))
-  .attr("class", "line")
+  .attr("class", "line line-all")
   .attr("d", line);
 }
 
 function drawline(p0, p1){
-  linesvg.selectAll("path").remove();
+  linesvg.selectAll(".line-all").remove();
   var f0 = null;
   var f1 = null;
   allFirms.forEach(function(d){
@@ -475,12 +444,12 @@ function drawline(p0, p1){
 
   linesvg.append("path")
   .datum(f0.filter(function(d){return d.year < 2014}))
-  .attr("class", "f0")
+  .attr("class", "f0 line-all")
   .attr("d",line)
 
   linesvg.append("path")
   .datum(f1.filter(function(d){return d.year < 2014}))
-  .attr("class", "f1")
+  .attr("class", "f1 line-all")
   .attr("d",line)
 
 }
@@ -519,32 +488,40 @@ function drawDoubleMap(p0,p1){
     .append("circle")
     .attr("type","button")
     .attr("class","button")
-    .attr("r","9")
-    .style("fill",function(d,i){if(i==0){return "steelblue"}else{return "pink"}})
-    .attr("transform",function(d,i){
-      var x = 22*i + 180;
-      var y =  220
+    .attr("r","10")
+    .style("stroke", "black")
+    .style("stroke-width", 1)
+    .style("fill",function(d, i){if(i==0){return "steelblue"}else{return "pink"}})
+    .attr("transform", function(d,i){
+      var x = 365;
+      var y =  30*i + 45;
       return "translate("+x+","+y+")"
     })
     .on("click",function(d,i){
       if(i==0){
-        updateMap(p0);
+        updateMap(p0, 0);
         mapsvg.selectAll("circle")
-        .style("fill-opacity",function(d,i){return 1- (i/2)})
+        .style("fill-opacity",function(d,i){return 1 - (i/2)})
       }else{
-        updateMap(p1);
+        updateMap(p1, 1);
         mapsvg.selectAll("circle")
         .style("fill-opacity",function(d,i){return .5 + (i/2)})
       }
     })
 
-    updateMap(p0);
+    updateMap(p0, 0);
 
 }
 
-function updateMap(p){
+function updateMap(p, f){
 
   var tdata;
+
+  if (f == 0) {
+    heatmap.range(["#fff", "steelblue"]);
+  } else {
+    heatmap.range(["#fff", "pink"]);
+  }
   
   allFirms.forEach(function(d){
     if (p['index'] == d['index']) {
@@ -560,7 +537,7 @@ function updateMap(p){
   tdata.forEach(function(d){
     var selector = "#"+d.state;
     mapsvg.select(selector)
-    .style("fill",heatmap(d.val))
+    .style("fill", heatmap(d.val))
   })
 
 }
@@ -568,6 +545,7 @@ function updateMap(p){
 function mapAve(){
 
   mapsvg.selectAll("circle").remove();
+  heatmap.range(["#fff", "steelblue"]);
 
   var state_ave = [];
   var tdata;

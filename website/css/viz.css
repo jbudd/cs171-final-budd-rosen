@@ -30,7 +30,7 @@ text {
 }
 
 .cat > .f0 {
-  fill: green;
+  fill: steelblue;
   stroke-width: none;
 }
 
@@ -52,7 +52,7 @@ text {
 .year > .f0 {
   fill: none;
   stroke-width: 1.5px;
-  stroke: green;
+  stroke: steelblue;
 }
 
 .year > .f1 {
@@ -63,8 +63,8 @@ text {
 
 .country {
   fill:#fff;
-  stroke-width: 1px;
-  stroke: steelblue;
+  stroke-width: .5px;
+  stroke: black;
 }
 
 .active-cell {
