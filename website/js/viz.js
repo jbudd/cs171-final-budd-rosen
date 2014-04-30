@@ -12,6 +12,8 @@ var x = d3.scale.ordinal().rangeBands([0, width]),
     z = d3.scale.linear().domain([0, 15]).clamp(true),
     c = d3.scale.category10().domain(d3.range(10));
 
+// var color = [null, '1b9e77', 'd95f02', '#7570b3'];
+
 var svg = d3.select("#co-viz").append("svg")
 .attr("width", width + margin.left + margin.right)
 .attr("height", height + margin.top + margin.bottom)
@@ -174,7 +176,7 @@ d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   };
 
   // The default sort order.
-  x.domain(orders.name);
+  x.domain(orders.count);
 
   svg.append("rect")
       .attr("class", "background")
@@ -231,7 +233,7 @@ d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
         .attr("width", x.rangeBand())
         .attr("height", x.rangeBand())
         .style("fill-opacity", function(d) { return z(Math.floor(d.z)); })
-        .style("fill", function(d) { return nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : null; })
+        .style("fill", function(d) { return nodes[d.x].group == nodes[d.y].group ? /*color[nodes[d.x].group]*/ c(nodes[d.x].group) : null; })
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("click", cellClicked);
@@ -342,6 +344,11 @@ function setcatav() {
   .attr("transform", function(d) {
     return "translate(" + 0 + "," + (0) + ")";
   });
+
+  // update text
+  d3.select("header h1").html("We Are Really Cool");
+  d3.select("header p").html("Johnathan Budd | Jared Rosen");
+
 }
 
 function byCat(p0, p1){
@@ -360,26 +367,46 @@ function byCat(p0, p1){
       });
     }
   });
-  
-  catsvg.selectAll(".f0")
-  .data(f0)
-  .enter().append("rect")
-  .attr("x", function(d) { return catxScale(d.key); })
-  .attr("y", function(d) { return catyScale(d.val); })
-  .attr("width", catxScale.rangeBand()/2)
-  .attr("height", function(d) { return dheight - catyScale(d.val); })
-  .attr("transform", function(d) { return "translate(" + 0 + "," + 0 + ")"; })
-  .attr("class", "f0");
 
-  catsvg.selectAll(".f1")
-  .data(f1)
-  .enter().append("rect")
-  .attr("x", function(d) { return catxScale(d.key) + (catxScale.rangeBand()/2); })
-  .attr("y", function(d) { return catyScale(d.val); })
-  .attr("width", (catxScale.rangeBand()/2))
-  .attr("height", function(d) { return dheight - catyScale(d.val); })
-  .attr("transform", function(d) { return "translate(" + 0 + "," + 0 + ")"; })
-  .attr("class", "f1");
+  if (p0.name != p1.name) {
+    catsvg.selectAll(".f0")
+    .data(f0)
+    .enter().append("rect")
+    .attr("x", function(d) { return catxScale(d.key); })
+    .attr("y", function(d) { return catyScale(d.val); })
+    .attr("width", catxScale.rangeBand()/2)
+    .attr("height", function(d) { return dheight - catyScale(d.val); })
+    .attr("transform", function(d) { return "translate(" + 0 + "," + 0 + ")"; })
+    .attr("class", "f0");
+
+    catsvg.selectAll(".f1")
+    .data(f1)
+    .enter().append("rect")
+    .attr("x", function(d) { return catxScale(d.key) + (catxScale.rangeBand()/2); })
+    .attr("y", function(d) { return catyScale(d.val); })
+    .attr("width", (catxScale.rangeBand()/2))
+    .attr("height", function(d) { return dheight - catyScale(d.val); })
+    .attr("transform", function(d) { return "translate(" + 0 + "," + 0 + ")"; })
+    .attr("class", "f1");
+
+    // update text
+    d3.select("header h1").html("<span class='f0'>"+p0.name+"</span> and <span class='f1'>"+p1.name+"</span>");
+    d3.select("header p").html("They have co-invested "+allFirms[p0.index]['cooc'][p1.permalink]+" times");
+  } else {
+    catsvg.selectAll("rect")
+    .data(f0)
+    .enter().append("rect")
+    .attr("x", function(d, i) { return catxScale(d.key); })
+    .attr("y", function(d) { return catyScale(d.val); })
+    .attr("width", catxScale.rangeBand())
+    .attr("height", function(d) { return dheight - catyScale(d.val); })
+    .attr("transform", function(d) { return "translate(" + 0 + "," + (0) + ")"; });
+
+    // update text
+    d3.select("header h1").html("<span class='f0'>"+p0.name+"</span>");
+    d3.select("header p").html("It has made "+allFirms[p0.index]['total']+" investments");
+  }
+
 }
 
 function lineGraph(p){
@@ -442,47 +469,50 @@ function drawline(p0, p1){
     }
   });
 
-  linesvg.append("path")
-  .datum(f0.filter(function(d){return d.year < 2014}))
-  .attr("class", "f0 line-all")
-  .attr("d",line)
+  if(p0.name != p1.name) {
+    linesvg.append("path")
+    .datum(f0.filter(function(d){return d.year < 2014}))
+    .attr("class", "f0 line-all")
+    .attr("d",line)
 
-  linesvg.append("path")
-  .datum(f1.filter(function(d){return d.year < 2014}))
-  .attr("class", "f1 line-all")
-  .attr("d",line)
+    linesvg.append("path")
+    .datum(f1.filter(function(d){return d.year < 2014}))
+    .attr("class", "f1 line-all")
+    .attr("d",line)
+  } else {
+    linesvg.append("path")
+    .datum(f0.filter(function(d){return d.year < 2014}))
+    .attr("class", "line line-all")
+    .attr("d",line)
+  }
 
 }
 
 function createMap (){
   d3.json("data/us-named.json", function(data) {
-
-
-
     var usMap = topojson.feature(data,data.objects.states).features
 
-   var states = mapsvg.selectAll(".country").data(usMap).enter()
-        .append("path")
-        .attr("d",path)
-        .attr("class","country")
-        .attr("id",function(d){return d.properties.code;})
+    var states = mapsvg.selectAll(".country").data(usMap).enter()
+    .append("path")
+    .attr("d",path)
+    .attr("class","country")
+    .attr("id",function(d){return d.properties.code;})
 
-
-    mapAve();
-        
+    mapAve();    
 });
 
 
 }
 
-function drawDoubleMap(p0,p1){
+function drawDoubleMap(p0, p1){
   
   mapsvg.selectAll("circle").remove();
 
-  var buttonnames = [p0.name,p1.name]
+  var buttonnames = [p0.name, p1.name]
   var p = p0;
 
-  var button = mapsvg.selectAll("circle")
+  if (p0.name != p1.name) {
+    var button = mapsvg.selectAll("circle")
     .data(buttonnames)
     .enter()
     .append("circle")
@@ -491,7 +521,7 @@ function drawDoubleMap(p0,p1){
     .attr("r","10")
     .style("stroke", "black")
     .style("stroke-width", 1)
-    .style("fill",function(d, i){if(i==0){return "steelblue"}else{return "pink"}})
+    .style("fill",function(d, i){ if (i == 0) { return "steelblue"; } else { return "pink";} })
     .attr("transform", function(d,i){
       var x = 365;
       var y =  30*i + 45;
@@ -500,14 +530,13 @@ function drawDoubleMap(p0,p1){
     .on("click",function(d,i){
       if(i==0){
         updateMap(p0, 0);
-        mapsvg.selectAll("circle")
-        .style("fill-opacity",function(d,i){return 1 - (i/2)})
+        mapsvg.selectAll("circle").style("fill-opacity",function(d,i){return 1 - (i/2)});
       }else{
         updateMap(p1, 1);
-        mapsvg.selectAll("circle")
-        .style("fill-opacity",function(d,i){return .5 + (i/2)})
+        mapsvg.selectAll("circle").style("fill-opacity",function(d,i){return .5 + (i/2)});
       }
     })
+    } 
 
     updateMap(p0, 0);
 

@@ -69,11 +69,23 @@ header {
 	margin: 0px 0px 25px 0px;
 	padding: 10px 0px 10px 0px;
 	text-align: center;
-	background-color: pink;
+	/*background-color: green;*/
 }
 
 h1 {
 	font-size: 200%;
+}
+
+header p {
+	padding: 3px;
+}
+
+.f0 {
+	color: steelblue;
+}
+
+.f1 {
+	color: pink;
 }
 
 #all {
