@@ -75,7 +75,7 @@ var heatmap = d3.scale.linear();
 
 var tip = d3.tip().attr("class","d3-tip").html(function(d){return d;});
 
-d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
+d3.json("data/final-data.json", function(firms) {
   firms.forEach(function(d){
     if (d['name'] == "Start-Up Chile") {
       d['time'][2010] = d['time'][2010]/2
