@@ -179,6 +179,8 @@ d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
 
   // The default sort order.
   x.domain(orders.count);
+  // order("count");
+
 
   svg.append("rect")
       .attr("class", "background")
@@ -291,6 +293,8 @@ d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
         .delay(function(d, i) { return x(i) * 4; })
         .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
   }
+
+  
 
   // var timeout = setTimeout(function() {
   //   order("count");
@@ -608,5 +612,7 @@ function mapAve(){
     mapsvg.select(selector)
     .style("fill",heatmap(d.val))
   })
+
+
 
 }
