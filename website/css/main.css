@@ -81,11 +81,11 @@ header p {
 }
 
 .f0 {
-	color: steelblue;
+	color: #243743;
 }
 
 .f1 {
-	color: pink;
+	color: #28B78D;
 }
 
 #all {
@@ -105,7 +105,7 @@ header p {
 	width: 775px;
 	height: 775px;
 	float: left;
-	/*background-color: pink;*/
+	/*background-color: #28B78D;*/
 }
 
 #detail-viz {
@@ -140,7 +140,7 @@ footer {
 	min-height: 50px;
 	margin: 25px 0px 0px 0px;
 	text-align: center;
-	background-color: pink;
+	background-color: #28B78D;
 }
 
 footer p {

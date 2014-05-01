@@ -73,6 +73,8 @@ var path = d3.geo.path().projection(projection);
 
 var heatmap = d3.scale.linear();
 
+var tip = d3.tip().attr("class","d3-tip").html(function(d){return d;});
+
 d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
   firms.forEach(function(d){
     if (d['name'] == "Start-Up Chile") {
@@ -113,7 +115,7 @@ d3.json("../../data/allFirms_2014-04-07-01-06-44_out.json", function(firms) {
 
   heatmap.domain([0, 15])
   .interpolate(d3.interpolateRgb)
-  // .range(["#fff", "steelblue"])
+  // .range(["#fff", "#243743"])
   .clamp(true);
 
 
@@ -346,7 +348,7 @@ function setcatav() {
   });
 
   // update text
-  d3.select("header h1").html("We Are Really Cool");
+  d3.select("header h1").html("VC Showdown");
   d3.select("header p").html("Johnathan Budd | Jared Rosen");
 
 }
@@ -498,7 +500,9 @@ function createMap (){
     .attr("class","country")
     .attr("id",function(d){return d.properties.code;})
 
-    mapAve();    
+    mapAve(); 
+
+    mapsvg.call(tip);   
 });
 
 
@@ -521,7 +525,8 @@ function drawDoubleMap(p0, p1){
     .attr("r","10")
     .style("stroke", "black")
     .style("stroke-width", 1)
-    .style("fill",function(d, i){ if (i == 0) { return "steelblue"; } else { return "pink";} })
+    .style("fill",function(d, i){ if (i == 0) { return "#243743"; } else { return "#28B78D";} })
+    .style("fill-opacity",function(d,i){return 1 - (i/2)})
     .attr("transform", function(d,i){
       var x = 365;
       var y =  30*i + 45;
@@ -544,12 +549,14 @@ function drawDoubleMap(p0, p1){
 
 function updateMap(p, f){
 
+
+  
   var tdata;
 
   if (f == 0) {
-    heatmap.range(["#fff", "steelblue"]);
+    heatmap.range(["#fff", "#243743"]);
   } else {
-    heatmap.range(["#fff", "pink"]);
+    heatmap.range(["#fff", "#28B78D"]);
   }
   
   allFirms.forEach(function(d){
@@ -559,6 +566,11 @@ function updateMap(p, f){
       });
     }
   });
+
+   mapsvg.selectAll("path")
+    .on("mouseover",function(d){
+      console.log(d['properties']['code']);
+    })
 
 
   tdata = tdata.filter(function(d){return d.state != ""});
@@ -574,7 +586,7 @@ function updateMap(p, f){
 function mapAve(){
 
   mapsvg.selectAll("circle").remove();
-  heatmap.range(["#fff", "steelblue"]);
+  heatmap.range(["#fff", "#243743"]);
 
   var state_ave = [];
   var tdata;

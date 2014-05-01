@@ -26,17 +26,17 @@ text {
 }
 
 .cat rect {
-  fill: steelblue;
+  fill: #243743;
   stroke-width: none;
 }
 
 .cat > .f0 {
-  fill: steelblue;
+  fill: #243743;
   stroke-width: none;
 }
 
 .cat > .f1 {
-  fill: pink;
+  fill: #28B78D;
   stroke-width: none;
 }
 
@@ -47,19 +47,19 @@ text {
 .year > .line {
   fill: none;
   stroke-width: 1.5px;
-  stroke: steelblue;
+  stroke: #243743;
 }
 
 .year > .f0 {
   fill: none;
   stroke-width: 1.5px;
-  stroke: steelblue;
+  stroke: #243743;
 }
 
 .year > .f1 {
   fill: none;
   stroke-width: 1.5px;
-  stroke: pink;
+  stroke: #28B78D;
 }
 
 .country {
