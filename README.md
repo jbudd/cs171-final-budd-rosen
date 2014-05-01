@@ -2,7 +2,7 @@
 Johnathn Budd | Jared Rosen
 
 *	Our project website is: //TODO
-*	Our screencast can be found at: //TODO
+*	Our screencast can be found at: [http://youtu.be/NpDiIC5VKlk](http://youtu.be/NpDiIC5VKlk)
 
 ##Repository Overview##
 Our repository contains our processbook, design studio, and this README along with two subdirectories: `data` and `website`.  The `data` directory contains the iPython Notebook where we did all the data gathering/preliminary analysis and various json files that were merged to create our final data set `allFirms_2014-04-07-01-06-44_out.json`. The `website` directory is where we actually built our visualization. `js/viz.js` and `css/viz.css` are the two key files as they contain the overwhelming majority for our code. ‘js/jquery.easyModal.js’ is a simple modal plugin downloded from the [Interent](http://flaviusmatis.github.io/easyModal.js/).
