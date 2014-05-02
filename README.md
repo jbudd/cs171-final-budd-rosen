@@ -1,7 +1,7 @@
 #VC Showdown#
 Johnathn Budd | Jared Rosen
 
-*	Our project website is: //TODO
+*	Our project website is: [http://www.vcshowdown.com](http://www.vcshowdown.com)
 *	Our screencast can be found at: [http://youtu.be/NpDiIC5VKlk](http://youtu.be/NpDiIC5VKlk)
 
 ##Repository Overview##

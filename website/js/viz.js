@@ -161,14 +161,8 @@ d3.json("data/final-data.json", function(firms) {
     });
   });
 
-  // firms.forEach(function(links) {
-  //   d3.keys(links.cooc).forEach(function(link) {
-  //     matrix[links.index][indices[link]].z = Math.floor(matrix[links.index][indices[link]].z);
-  //     nodes[links.index].count = Math.floor(nodes[links.index].count);
-  //   });
-  // });
 
-   
+  // code for matrix adapted from http://bost.ocks.org/mike/miserables/ 
 
   // Precompute the orders.
   var orders = {
@@ -295,11 +289,6 @@ d3.json("data/final-data.json", function(firms) {
   }
 
   
-
-  // var timeout = setTimeout(function() {
-  //   order("count");
-  //   d3.select("#order").property("selectedIndex", 1).node().focus();
-  // }, 2500);
 });
 
 function makebyCat() {
